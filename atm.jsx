@@ -1,11 +1,16 @@
 const ATMDeposit = ({ onChange, isDeposit, isValid }) => {
-  const choice = ['Deposit', 'Cash Back'];
   console.log(`ATM isDeposit: ${isDeposit}`);
   return (
     <label className="label huge">
-      <h3> {choice[Number(!isDeposit)]}</h3>
+       <p>Select an amount to {isDeposit? "deposit" : "withdraw"} in US dollars.</p>
+
+      
+
       <input id="number-input" type="number" width="200" onChange={onChange}></input>
-      <input type="submit" width="200" value="Submit" id="submit-input" disabled={!isValid}></input>
+      <input type="submit" width="200" value={isDeposit? "Deposit" : "Withdraw"} id="submit-input" disabled={!isValid}></input>
+      {
+        !isValid && <p className="error">Enter a valid amount</p>
+      }
     </label>
   );
 };
@@ -17,7 +22,7 @@ const Account = () => {
   const [isDeposit, setIsDeposit] = React.useState(true);
   const [validTransaction, setValidTransaction] = React.useState(false);
 
-  let status = `Account Balance $ ${totalState} `;
+  let status = `Your account balance is $ ${totalState} `;
   console.log(`Account Rendered with isDeposit: ${isDeposit}`);
 
   const handleChange = (event) => {
@@ -27,7 +32,7 @@ const Account = () => {
       setValidTransaction(false);
       return;
     }
-    if ((atmMode == "Cash Back") && (newDeposit > totalState)){
+    if ((atmMode == "Withdraw") && (newDeposit > totalState)){
       setValidTransaction(false);
       return;
     }
@@ -49,7 +54,7 @@ const Account = () => {
      case "Deposit":
       setIsDeposit(true);      
       break;
-     case "Cash Back":
+     case "Withdraw":
       setIsDeposit(false);
       break;
     default:
@@ -58,19 +63,22 @@ const Account = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}> 
       <h2 id="total">{status}</h2>
-      <label>Select an action below to continue</label>
-      <select onChange={(e) => handleModeSelect(e)} name="mode" id="mode-select">
-        <option id="no-selection" value=""></option>
-        <option id="deposit-selection" value="Deposit">Deposit</option>
-        <option id="cashback-selection" value="Cash Back">Cash Back</option>
-      </select>
+      <div style={{ whiteSpace: 'no-wrap', display: 'block'}}>
+        <label>Select an action to continue
+          <select onChange={(e) => handleModeSelect(e)} name="mode" id="mode-select" >
+            <option id="no-selection" value=""></option>
+            <option id="deposit-selection" value="Deposit">Deposit</option>
+            <option id="cashback-selection" value="Withdraw">Withdraw</option>
+          </select>
+        </label>
+      </div>
       {
-       atmMode && <ATMDeposit onChange={handleChange} isDeposit={isDeposit} isValid={validTransaction}></ATMDeposit>
+        atmMode && <ATMDeposit onChange={handleChange} isDeposit={isDeposit} isValid={validTransaction}></ATMDeposit>
       }
-      
-    </form>
+
+    </form >
   );
 };
 // ========================================
